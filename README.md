@@ -1,3 +1,3 @@
-# almaty-network
+almaty-composer-network
 
-Almaty network for Medical Insurance
+Almaty Composer Network for medical insurance
