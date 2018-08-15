@@ -17,3 +17,86 @@
  */
 
 namespace org.almaty.biznet
+
+abstract participant User identified by email {
+  o String firstName
+  o String lastName
+  o String email
+  o String userID
+}
+
+participant Patient extends User{
+  --> Doctor doctor
+  --> Account account
+}
+
+participant Doctor extends User{
+  --> Patient[] patients
+  --> Account account
+}
+
+participant Verifier extends User{
+}
+
+asset Account identified by accountID {
+  o String accountID
+  o Double balance default = 0.0
+  -->Token token
+}
+asset AlmatyAccount extends Account {
+  
+}
+asset Token identified by tokenID{
+  o String tokenID
+  o String Discription
+}
+ 
+asset MedicalData identified by dataID{
+  o String dataID
+  o String hashvalue
+  --> Patient patient
+  --> Doctor[] authorized
+}
+  
+asset Claim identified by claimID{
+  o String claimID
+  o Double claimValue
+  --> Doctor doctor
+  --> Patient patient
+  --> MedicalData medicalData
+  --> Verifier[] verifiers optional
+  o Boolean claimStatus default = false optional
+  o Boolean[] verificationResult optional
+  o Boolean treatmentStatus default = false optional
+}
+
+ //Add purchased tokens to the patient's account
+ //Add the amount of purchased tokens to the Amaty Account
+transaction TokenIssue{
+  o Double number
+  --> Account account
+}
+  
+//Checks patient balance and if it is valid assign the doctor to the patient 
+//Add patient to the doctor's patients list
+// Then the rest of the procedure including send the invoice to the patient, initial checking and request for the test can be handle out of the blockchain transactions
+transaction ChooseDoctor{
+ --> Patient patient
+ --> Doctor doctor
+}
+  
+//After doctor recieves the test result he creates a claim asset instance. Verfiers can selected randomly. 
+// The verifier can confirm or reject the claim using this transactions
+// If all verifiers sent their opinions, transaction automatically evaluates the result and if the claim were approved the doctor can start the treatment 
+transaction ClaimVerification {
+o Boolean result
+--> Claim claim
+}
+  
+ //After treatment completed the doctor can request to transfer claimValue to his/her account
+ //The treatmentStatus changes to true 
+transaction TransferClaimVelue {
+-->Doctor doctor
+-->Claim claim
+--> AlmatyAccount almaty
+}
