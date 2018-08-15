@@ -48,7 +48,7 @@ asset AlmatyAccount extends Account {
 }
 asset Token identified by tokenID{
   o String tokenID
-  o String Discription
+  o String description
 }
  
 asset MedicalData identified by dataID{
